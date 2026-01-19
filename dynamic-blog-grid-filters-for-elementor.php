@@ -249,9 +249,9 @@ function dbgfe_load_posts() {
     ] );
 }
 
-
-
-
+/**
+ * Add custom link
+ */
 add_filter(
     'plugin_row_meta',
     function ( $links, $file ) {
