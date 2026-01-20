@@ -1,6 +1,6 @@
 === Dynamic Blog Grid & Filters for Elementor ===
 Contributors: Md Laju Miah
-Tags: elementor, blog grid, post grid, filters, ajax filter, category filter, tag filter
+Tags: elementor, elementor widget, blog grid, post grid, ajax filter, category filter, tag filter, pagination
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -43,7 +43,8 @@ Perfect for blogs, magazines, news portals, and content-heavy websites.
 2. Install and activate this plugin
 3. Open a page with Elementor
 4. Drag **Dynamic Blog Grid & Filters** widget
-5. Customize layout, filters, and pagination
+5. Configure grid layout, filters, pagination, and styles
+
 
 == Installation ==
 
@@ -64,7 +65,7 @@ Not in version 1.0. Support for CPTs is planned.
 
 = Is AJAX filtering supported? =
 
-AJAX filtering will be added in upcoming versions.
+Yes. Posts are filtered and paginated using AJAX for a smooth user experience.
 
 = Is this plugin free? =
 
@@ -72,10 +73,11 @@ Yes. A PRO version is planned with advanced features.
 
 == Screenshots ==
 
-1. Blog grid with filters
-2. Mobile off-canvas filter panel
-3. Elementor widget settings
-4. Pagination and loading skeleton
+1. Elementor Widget Settings – Configure the Dynamic Blog Grid & Filters widget, adjust layout, enable/disable category and tag filters, and set pagination options.
+2. Blog Grid with Filters on Live Site – Frontend example showing posts filtered by categories and tags in a clean, responsive grid layout.
+3. Mobile Off-Canvas Filter Panel – Responsive filter panel for mobile devices that slides in from the side for a touch-friendly experience.
+4. Pagination and Loading Skeleton – Demonstrates AJAX-like pagination with a preloader skeleton effect for better user experience.
+
 
 == Changelog ==
 

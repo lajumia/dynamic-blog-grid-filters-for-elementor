@@ -7,6 +7,7 @@
  * Author:      Md Laju Miah
  * Author URI:  https://profiles.wordpress.org/devlaju/
  * Text Domain: dbgfe
+ * Domain Path: /languages
  * License:     GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Requires at least: 6.0
@@ -72,16 +73,17 @@ function dbgfe_register_assets() {
         'dbgfe-style',
         DBGFE_URL . 'assets/css/dynamic-blog-grid-filters-for-elementor.css',
         [],
-        DBGFE_VERSION
+        filemtime( DBGFE_PATH . 'assets/css/dynamic-blog-grid-filters-for-elementor.css' )
     );
 
     wp_enqueue_script(
         'dbgfe-script',
         DBGFE_URL . 'assets/js/dynamic-blog-grid-filters-for-elementor.js',
         [ 'jquery' ],
-        DBGFE_VERSION,
+        filemtime( DBGFE_PATH . 'assets/js/dynamic-blog-grid-filters-for-elementor.js' ),
         true
     );
+
     wp_localize_script(
         'dbgfe-script',
         'dbgfe_ajax',
@@ -100,6 +102,9 @@ function dbgfe_register_widgets( $widgets_manager ) {
     $widgets_manager->register( new \DBGFE_Dynamic_Blog_Grid() );
 }
 
+/**
+ * AJAX handler for loading posts
+ */
 add_action( 'wp_ajax_dbgfe_load_posts', 'dbgfe_load_posts' );
 add_action( 'wp_ajax_nopriv_dbgfe_load_posts', 'dbgfe_load_posts' );
 
@@ -142,8 +147,7 @@ function dbgfe_load_posts() {
     if ( $query->have_posts() ) :
         while ( $query->have_posts() ) : $query->the_post(); ?>
             <div class="blog-card">
-
-                <a href="<?php the_permalink(); ?>">
+                <a href="<?php echo esc_url( get_the_permalink() ); ?>">
                     <?php if ( has_post_thumbnail() ) : ?>
                         <?php the_post_thumbnail( 'medium', [
                             'alt'   => esc_attr( get_the_title() ),
@@ -155,15 +159,12 @@ function dbgfe_load_posts() {
                 </a>
 
                 <div class="blog-content">
-                    <h3><?php the_title(); ?></h3>
-
-                    <p><?php echo wp_trim_words( get_the_excerpt(), 3 ); ?></p>
-
-                    <a href="<?php the_permalink(); ?>" class="read-more">
+                    <h3><?php echo esc_html( get_the_title() ); ?></h3>
+                    <p><?php echo esc_html( wp_trim_words( get_the_excerpt(), 3 ) ); ?></p>
+                    <a href="<?php echo esc_url( get_the_permalink() ); ?>" class="read-more">
                         <?php esc_html_e( 'Read More →', 'dbgfe' ); ?>
                     </a>
                 </div>
-
             </div>
         <?php endwhile;
     else :
@@ -178,15 +179,11 @@ function dbgfe_load_posts() {
      * PAGINATION HTML
      * -------------------- */
 
-    // Get real frontend URL from JS
     $current_url = ! empty( $_POST['current_url'] )
         ? esc_url_raw( $_POST['current_url'] )
         : home_url( '/' );
 
-    // Remove existing /page/x/ from URL
-    $base_url = trailingslashit(
-        preg_replace( '#/page/\d+/?#', '', $current_url )
-    );
+    $base_url = trailingslashit( preg_replace( '#/page/\d+/?#', '', $current_url ) );
 
     ob_start();
 
@@ -195,82 +192,62 @@ function dbgfe_load_posts() {
 
             <!-- Prev -->
             <?php
-        if ( $paged <= 1 ) {
-            $prev_href = '#';
-        } elseif ( $paged === 2 ) {
-            // page 2 → prev should go to base archive
-            $prev_href = $base_url;
-        } else {
-            // page 3+ → normal page/x
-            $prev_href = trailingslashit( $base_url . 'page/' . ( $paged - 1 ) );
-        }
-        ?>
-
-        <a
-            href="<?php echo esc_url( $prev_href ); ?>"
-            class="page-prev <?php echo ( $paged <= 1 ) ? 'disabled' : ''; ?>"
-            style="display: <?php echo ( $paged == 1 ) ? 'none' : 'block'; ?>"
-            data-page="<?php echo max( 1, $paged - 1 ); ?>"
-            data-posts-per-page="<?php echo esc_attr( $posts_per_page ); ?>"
-        >«</a>
-
+            if ( $paged <= 1 ) {
+                $prev_href = '#';
+            } elseif ( $paged === 2 ) {
+                $prev_href = $base_url;
+            } else {
+                $prev_href = trailingslashit( $base_url . 'page/' . ( $paged - 1 ) );
+            }
+            ?>
+            <a href="<?php echo esc_url( $prev_href ); ?>"
+               class="page-prev <?php echo ( $paged <= 1 ) ? 'disabled' : ''; ?>"
+               data-page="<?php echo max( 1, $paged - 1 ); ?>"
+               data-posts-per-page="<?php echo esc_attr( $posts_per_page ); ?>">«</a>
 
             <!-- Numbers -->
             <?php for ( $i = 1; $i <= $query->max_num_pages; $i++ ) : ?>
-                <a
-                    href="<?php echo esc_url( trailingslashit( $base_url . 'page/' . $i ) ); ?>"
-                    class="page-number <?php echo ( $i == $paged ) ? 'active' : ''; ?>"
-                    data-page="<?php echo esc_attr( $i ); ?>"
-                    data-posts-per-page="<?php echo $posts_per_page; ?>"
-                >
+                <a href="<?php echo esc_url( trailingslashit( $base_url . 'page/' . $i ) ); ?>"
+                   class="page-number <?php echo ( $i == $paged ) ? 'active' : ''; ?>"
+                   data-page="<?php echo esc_attr( $i ); ?>"
+                   data-posts-per-page="<?php echo esc_attr( $posts_per_page ); ?>">
                     <?php echo esc_html( $i ); ?>
                 </a>
             <?php endfor; ?>
 
             <!-- Next -->
-            <a
-                href="<?php echo esc_url( $paged < $query->max_num_pages ? trailingslashit( $base_url . 'page/' . ( $paged + 1 ) ) : '#' ); ?>"
-                class="page-next <?php echo ( $paged == $query->max_num_pages ) ? 'disabled' : ''; ?>"
-                style="display: <?php echo ( $paged == $query->max_num_pages ) ? 'none' : 'block'; ?>"
-                data-page="<?php echo min( $query->$max_num_pages, $paged + 1 ); ?>"
-                data-posts-per-page="<?php echo $posts_per_page; ?>"
-            >»</a>
-
+            <a href="<?php echo esc_url( $paged < $query->max_num_pages ? trailingslashit( $base_url . 'page/' . ( $paged + 1 ) ) : '#' ); ?>"
+               class="page-next <?php echo ( $paged == $query->max_num_pages ) ? 'disabled' : ''; ?>"
+               data-page="<?php echo min( $query->max_num_pages, $paged + 1 ); ?>"
+               data-posts-per-page="<?php echo esc_attr( $posts_per_page ); ?>">»</a>
         </div>
     <?php endif;
 
     $pagination_html = ob_get_clean();
 
     wp_send_json( [
-        'posts'      => $posts_html,
-        'pagination' => $pagination_html,
-        'posts_per_page'      => $posts_per_page,
-        'current_url'   => $current_url
+        'posts'          => $posts_html,
+        'pagination'     => $pagination_html,
+        'posts_per_page' => $posts_per_page,
+        'current_url'    => $current_url
     ] );
+
+    wp_die(); 
 }
 
 /**
- * Add custom link
+ * Add custom plugin links
  */
-add_filter(
-    'plugin_row_meta',
-    function ( $links, $file ) {
+add_filter( 'plugin_row_meta', function ( $links, $file ) {
 
-        if ( plugin_basename( __FILE__ ) !== $file ) {
-            return $links;
-        }
+    if ( plugin_basename( __FILE__ ) !== $file ) {
+        return $links;
+    }
 
-        $row_meta = [
-            'docs' => '<a href="https://wpspeedpress.com/dynamic-blog-grid-filters-for-elementor/" target="_blank">' . esc_html__( 'Docs & FAQs', 'dbgfe' ) . '</a>',
-            'videos' => '<a href="https://www.youtube.com/@speedpress_for_wp" target="_blank">' . esc_html__( 'Video Tutorials', 'dbgfe' ) . '</a>',
-        ];
+    $row_meta = [
+        'docs'   => '<a href="https://wpspeedpress.com/dynamic-blog-grid-filters-for-elementor/" target="_blank">' . esc_html__( 'Docs & FAQs', 'dbgfe' ) . '</a>',
+        'videos' => '<a href="https://www.youtube.com/@speedpress_for_wp" target="_blank">' . esc_html__( 'Video Tutorials', 'dbgfe' ) . '</a>',
+    ];
 
-        return array_merge( $links, $row_meta );
-    },
-    10,
-    2
-);
-
-
-
-
+    return array_merge( $links, $row_meta );
+}, 10, 2 );

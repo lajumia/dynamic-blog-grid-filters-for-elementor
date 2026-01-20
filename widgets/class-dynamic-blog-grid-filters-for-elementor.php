@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 class DBGFE_Dynamic_Blog_Grid extends \Elementor\Widget_Base {
 
     public function get_name(): string {
@@ -23,7 +27,7 @@ class DBGFE_Dynamic_Blog_Grid extends \Elementor\Widget_Base {
 
     protected function register_controls(): void {
 
-        // Content Tab Start
+        // Content Tab
         $this->start_controls_section(
             'section_content',
             [
@@ -51,59 +55,57 @@ class DBGFE_Dynamic_Blog_Grid extends \Elementor\Widget_Base {
                 'label' => esc_html__( 'Columns', 'dbgfe' ),
                 'type' => \Elementor\Controls_Manager::SELECT,
                 'options' => [
-                    1 => '1',
-                    2 => '2',
-                    3 => '3',
-                    4 => '4',
+                    '1' => '1',
+                    '2' => '2',
+                    '3' => '3',
+                    '4' => '4',
                 ],
-                'default' => 4,
+                'default' => '4',
             ]
         );
 
-        // Categories filter
+        // Enable category filter
         $this->add_control(
-        'enable_category_filter',
-        [
-            'label'        => esc_html__( 'Enable Category Filter', 'dbgfe' ),
-            'type'         => \Elementor\Controls_Manager::SWITCHER,
-            'label_on'     => esc_html__( 'Yes', 'dbgfe' ),
-            'label_off'    => esc_html__( 'No', 'dbgfe' ),
-            'return_value' => 'yes',
-            'default'      => 'yes',
-        ]
+            'enable_category_filter',
+            [
+                'label'        => esc_html__( 'Enable Category Filter', 'dbgfe' ),
+                'type'         => \Elementor\Controls_Manager::SWITCHER,
+                'label_on'     => esc_html__( 'Yes', 'dbgfe' ),
+                'label_off'    => esc_html__( 'No', 'dbgfe' ),
+                'return_value' => 'yes',
+                'default'      => 'yes',
+            ]
         );
 
-
-        // Tags filter
+        // Enable tags filter
         $this->add_control(
-        'enable_tags_filter',
-        [
-            'label'        => esc_html__( 'Enable Tags Filter', 'dbgfe' ),
-            'type'         => \Elementor\Controls_Manager::SWITCHER,
-            'label_on'     => esc_html__( 'Yes', 'dbgfe' ),
-            'label_off'    => esc_html__( 'No', 'dbgfe' ),
-            'return_value' => 'yes',
-            'default'      => 'yes',
-        ]
+            'enable_tags_filter',
+            [
+                'label'        => esc_html__( 'Enable Tags Filter', 'dbgfe' ),
+                'type'         => \Elementor\Controls_Manager::SWITCHER,
+                'label_on'     => esc_html__( 'Yes', 'dbgfe' ),
+                'label_off'    => esc_html__( 'No', 'dbgfe' ),
+                'return_value' => 'yes',
+                'default'      => 'yes',
+            ]
         );
 
         // Enable/Disable Sidebar
         $this->add_control(
-        'enable_sidebar',
-        [
-            'label'        => esc_html__( 'Enable Sidebar', 'dbgfe' ),
-            'type'         => \Elementor\Controls_Manager::SWITCHER,
-            'label_on'     => esc_html__( 'Yes', 'dbgfe' ),
-            'label_off'    => esc_html__( 'No', 'dbgfe' ),
-            'return_value' => 'yes',
-            'default'      => 'yes',
-        ]
+            'enable_sidebar',
+            [
+                'label'        => esc_html__( 'Enable Sidebar', 'dbgfe' ),
+                'type'         => \Elementor\Controls_Manager::SWITCHER,
+                'label_on'     => esc_html__( 'Yes', 'dbgfe' ),
+                'label_off'    => esc_html__( 'No', 'dbgfe' ),
+                'return_value' => 'yes',
+                'default'      => 'yes',
+            ]
         );
 
         $this->end_controls_section();
-        // Content Tab End
 
-        // Style Tab Start
+        // Style Tab
         $this->start_controls_section(
             'section_style',
             [
@@ -112,6 +114,7 @@ class DBGFE_Dynamic_Blog_Grid extends \Elementor\Widget_Base {
             ]
         );
 
+        // Grid Gap
         $this->add_control(
             'grid_gap',
             [
@@ -134,55 +137,47 @@ class DBGFE_Dynamic_Blog_Grid extends \Elementor\Widget_Base {
             ]
         );
 
+        // Color template
         $this->add_control(
             'color_template',
             [
                 'label' => esc_html__( 'Color Template', 'dbgfe' ),
                 'type' => \Elementor\Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .pagination a.active, {{WRAPPER}} .pagination a:hover' => '
-                    background-color: {{VALUE}};
-                    border-color: {{VALUE}};
-                    ',
-                    '{{WRAPPER}} .read-more'  => 'color: {{VALUE}};',
-                    '{{WRAPPER}} .filter-group input::before'  => 'background-color: {{VALUE}};',
-                    '{{WRAPPER}} .mobile-filter-btn'  => 'background-color: {{VALUE}};',
-                    '{{WRAPPER}} #clearFilters'  => 'color: {{VALUE}};',
-                    '{{WRAPPER}} .search-category, {{WRAPPER}} .search-tag,{{WRAPPER}} .filter-checkbox' => '
-                    border-color:{{VALUE}};
-                    ',
-                    
-                    
+                    '{{WRAPPER}} .pagination a.active, {{WRAPPER}} .pagination a:hover' => 'background-color: {{VALUE}}; border-color: {{VALUE}};',
+                    '{{WRAPPER}} .read-more' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .filter-group input::before' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .mobile-filter-btn' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} #clearFilters' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .search-category, {{WRAPPER}} .search-tag, {{WRAPPER}} .filter-checkbox' => 'border-color: {{VALUE}};',
                 ],
             ]
         );
 
+        // Taxonomy hover color
         $this->add_control(
-            'taxonomy-hover',
+            'taxonomy_hover',
             [
                 'label' => esc_html__( 'Taxonomy Hover', 'dbgfe' ),
                 'type' => \Elementor\Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .filter-group label:hover'  => 'background-color: {{VALUE}};',
-                    
-                    
+                    '{{WRAPPER}} .filter-group label:hover' => 'background-color: {{VALUE}};',
                 ],
             ]
         );
+
         $this->end_controls_section();
-        // Style Tab End
     }
 
     protected function render(): void {
         $settings = $this->get_settings_for_display();
 
-        // Include template file
+        // Safely include template
         $template_path = DBGFE_PATH . 'templates/dynamic-blog-grid.php';
-        if (file_exists($template_path)) {
+        if ( file_exists( $template_path ) ) {
             include $template_path;
         }
 
         wp_reset_postdata();
     }
-
 }
