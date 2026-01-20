@@ -179,11 +179,29 @@ function dbgfe_load_posts() {
      * PAGINATION HTML
      * -------------------- */
 
-    $current_url = ! empty( $_POST['current_url'] )
-        ? esc_url_raw( $_POST['current_url'] )
+    // $current_url = ! empty( $_POST['current_url'] )
+    //     ? esc_url_raw( $_POST['current_url'] )
+    //     : home_url( '/' );
+
+    // $base_url = trailingslashit( preg_replace( '#/page/\d+/?#', '', $current_url ) );
+
+    // Get the current URL safely
+    $current_url = ! empty( $_POST['current_url'] ) 
+        ? wp_unslash( $_POST['current_url'] ) // Unsplash input
         : home_url( '/' );
 
-    $base_url = trailingslashit( preg_replace( '#/page/\d+/?#', '', $current_url ) );
+    // Sanitize URL
+    $current_url = esc_url_raw( $current_url );
+
+    // Remove /page/{number}/ as before
+    $current_url = preg_replace( '#/page/\d+/?#', '', $current_url );
+
+    // Remove trailing # if it exists
+    $current_url = rtrim( $current_url, '#' );
+
+    // Add trailing slash at the end
+    $base_url = trailingslashit( $current_url );
+
 
     ob_start();
 
@@ -202,6 +220,7 @@ function dbgfe_load_posts() {
             ?>
             <a href="<?php echo esc_url( $prev_href ); ?>"
                class="page-prev <?php echo ( $paged <= 1 ) ? 'disabled' : ''; ?>"
+               style="display: <?php echo ( $paged == 1 ) ? 'none' : 'block'; ?>"
                data-page="<?php echo max( 1, $paged - 1 ); ?>"
                data-posts-per-page="<?php echo esc_attr( $posts_per_page ); ?>">«</a>
 
@@ -218,6 +237,7 @@ function dbgfe_load_posts() {
             <!-- Next -->
             <a href="<?php echo esc_url( $paged < $query->max_num_pages ? trailingslashit( $base_url . 'page/' . ( $paged + 1 ) ) : '#' ); ?>"
                class="page-next <?php echo ( $paged == $query->max_num_pages ) ? 'disabled' : ''; ?>"
+               style="display: <?php echo ( $paged == $query->max_num_pages ) ? 'none' : 'block'; ?>"
                data-page="<?php echo min( $query->max_num_pages, $paged + 1 ); ?>"
                data-posts-per-page="<?php echo esc_attr( $posts_per_page ); ?>">»</a>
         </div>
